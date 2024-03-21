@@ -1,0 +1,21 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Billing {
+  id                   Int      @id @default(autoincrement())
+  quantity             Int
+  chargedIntervalDays  Int
+  start                DateTime
+  status               String
+  statusDate           DateTime?
+  cancellationDate     DateTime?
+  amount               Float
+  nextCycle            DateTime
+  userId               String @default(uuid()) @unique
+}
