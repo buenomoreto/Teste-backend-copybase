@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { BillingsService } from './billings.service';
+import { Status } from '../types/enum/billings-status';
 
 @Controller('api')
 export class BillingsController {
@@ -24,7 +25,7 @@ export class BillingsController {
   }
 
   @Get('metrics')
-  async getMMR(
+  async getMetrics(
     @Query('start') start: Date,
     @Query('end') end: Date,
   ): Promise<Object> {
@@ -32,7 +33,10 @@ export class BillingsController {
   }
 
   @Get('listing')
-  async getBillings(@Query('page') page: number): Promise<Object> {
-    return await this.billingsService.listBillings(page);
+  async getBillings(
+    @Query('page') page: number,
+    @Query('status') status: Status,
+  ): Promise<Object> {
+    return await this.billingsService.listBillings(page, status);
   }
 }

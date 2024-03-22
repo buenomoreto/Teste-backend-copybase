@@ -1,12 +1,13 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../database/prisma.service';
 import { BillingDTO } from '../dtos/billings-response';
+import { Response } from '../types/interface/billings-list-response';
+import { Status } from '../types/enum/billings-status';
 import * as xlsx from 'xlsx';
 import * as moment from 'moment';
 import * as path from 'path';
 import 'moment/locale/pt-br';
 moment.locale('pt-br');
-
 @Injectable()
 export class BillingsService {
   constructor(private readonly prisma: PrismaService) {}
@@ -139,24 +140,26 @@ export class BillingsService {
     return response;
   }
 
-  async listBillings(page: number): Promise<Object> {
+  async listBillings(page: number, status: Status): Promise<Response> {
     const take = 15;
-    
     const skip = (page - 1) * take;
 
     const total = await this.prisma.billing.count({});
-
     const billings = await this.prisma.billing.findMany({
-      take, 
+      take,
       skip,
+      where: {
+        status: {
+          equals: status,
+        },
+      },
     });
 
     return {
-      billings, 
-      currentPage: page, 
-      itemsPerPage: take, 
+      billings,
+      currentPage: page,
+      itemsPerPage: take,
       total,
     };
-}
-
+  }
 }

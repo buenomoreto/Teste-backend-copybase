@@ -1,5 +1,5 @@
 import { IsNotEmpty } from 'class-validator';
-import { Status } from '../types/enum/status-billings';
+import { Status } from '../types/enum/billings-status';
 
 export class BillingDTO {
   @IsNotEmpty()
@@ -9,20 +9,20 @@ export class BillingDTO {
   chargedIntervalDays: number;
 
   @IsNotEmpty()
-  start: string | Date;
+  start: Date | string;
 
   @IsNotEmpty()
   status: Status;
 
   @IsNotEmpty()
-  statusDate: string | Date;
+  statusDate: Date | string;
 
-  cancellationDate: string | Date | null;
+  cancellationDate: Date | string | null;
 
   @IsNotEmpty()
   amount: number;
 
-  nextCycle: string | Date | null;
+  nextCycle: Date | string | null;
 
   @IsNotEmpty()
   userId: string;
