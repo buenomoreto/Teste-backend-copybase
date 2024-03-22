@@ -141,17 +141,22 @@ export class BillingsService {
 
   async listBillings(page: number): Promise<Object> {
     const take = 15;
+    
     const skip = (page - 1) * take;
 
+    const total = await this.prisma.billing.count({});
+
     const billings = await this.prisma.billing.findMany({
-      take,
+      take, 
       skip,
     });
 
     return {
-      billings,
-      currentPage: page,
-      itemsPerPage: take,
+      billings, 
+      currentPage: page, 
+      itemsPerPage: take, 
+      total,
     };
-  }
+}
+
 }

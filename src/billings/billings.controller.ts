@@ -9,7 +9,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { BillingsService } from './billings.service';
 
-@Controller('/api')
+@Controller('api')
 export class BillingsController {
   constructor(private readonly billingsService: BillingsService) {}
 
