@@ -9,6 +9,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { BillingsService } from './billings.service';
 import { Status } from '../types/enum/billings-status';
+import 'multer';
 
 @Controller('api')
 export class BillingsController {
