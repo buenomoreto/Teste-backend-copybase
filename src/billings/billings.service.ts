@@ -119,7 +119,7 @@ export class BillingsService {
         total: mrrByMonth[parseInt(month)].toFixed(2) || 0,
       },
       churn: {
-        total: churnByMonth[parseInt(month)] || 0,
+        total: churnByMonth[parseInt(month)].toFixed(2) || 0,
       },
     }));
 
@@ -139,22 +139,27 @@ export class BillingsService {
 
     return response;
   }
-
+  
   async listBillings(page: number, status: Status): Promise<Response> {
     const take = 15;
     const skip = (page - 1) * take;
-
-    const total = await this.prisma.billing.count({});
+  
+    const where = {
+      status: {
+        equals: status,
+      },
+    };
+  
+    const total = await this.prisma.billing.count({
+      where,
+    });
+  
     const billings = await this.prisma.billing.findMany({
       take,
       skip,
-      where: {
-        status: {
-          equals: status,
-        },
-      },
+      where,
     });
-
+  
     return {
       billings,
       currentPage: page,
@@ -162,4 +167,5 @@ export class BillingsService {
       total,
     };
   }
+  
 }

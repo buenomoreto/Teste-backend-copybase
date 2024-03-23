@@ -114,6 +114,7 @@ Este projeto consiste em um código backend capaz de lidar com a manipulação d
 | Parâmetro   | Tipo       | Descrição                                   |
 | :---------- | :--------- | :------------------------------------------ |
 | `page`      | `number`     | **Obrigatório**. Número da página para a listagem paginada. |
+| `status`    | `string`     | **Obrigatório**. Retorna os itens com base no status selecionado |
 
 #### Response
 ```JSON
