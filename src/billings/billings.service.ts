@@ -4,10 +4,9 @@ import { BillingDTO } from '../dtos/billings-response';
 import { Response } from '../types/interface/billings-list-response';
 import { Status } from '../types/enum/billings-status';
 import * as xlsx from 'xlsx';
-import moment from "moment"
 import * as path from 'path';
+import moment from "moment"
 import 'moment/locale/pt-br';
-moment.locale('pt-br');
 
 @Injectable()
 export class BillingsService {
