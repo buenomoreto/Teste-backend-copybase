@@ -150,20 +150,18 @@ export class BillingsService {
       },
     };
   
-    const total = await this.prisma.billing.count({
-      where,
-    });
-  
-    const billings = await this.prisma.billing.findMany({
-      take,
-      skip,
-      where,
-    });
+    const [total, billings] = await Promise.all([
+      this.prisma.billing.count({ where }),
+      this.prisma.billing.findMany({ take, skip, where }),
+    ]);
+    
+    const numberOfPages = Math.ceil(total / take);
   
     return {
       billings,
       currentPage: page,
       itemsPerPage: take,
+      numberOfPages,
       total,
     };
   }
