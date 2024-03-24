@@ -7,10 +7,12 @@ import moment from 'moment';
 @Module({
   imports: [],
   controllers: [BillingsController],
-  providers: [BillingsService, PrismaService, 
+  providers: [
+    BillingsService,
+    PrismaService,
     {
       provide: 'MomentWrapper',
-      useValue: moment
+      useValue: moment,
     },
   ],
 })

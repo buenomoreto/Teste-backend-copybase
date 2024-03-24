@@ -1,11 +1,14 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../database/prisma.service';
 import { BillingDTO } from '../dtos/billings-response';
-import { Response } from '../types/interface/billings-list-response';
+import { BillingsResponse } from '../types/interface/billings-list-response';
+import { MetricsResponse } from 'src/types/interface/billings-metrics-response';
 import { Status } from '../types/enum/billings-status';
 import * as xlsx from 'xlsx';
 import * as path from 'path';
-import moment from "moment"
+// Para que o Moment funcione localmente, é necessário importá-lo da seguinte forma:
+// import * as moment from 'moment';
+import moment from 'moment';
 import 'moment/locale/pt-br';
 
 @Injectable()
@@ -25,41 +28,35 @@ export class BillingsService {
     const workbook = xlsx.read(file.buffer);
     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
     const data = xlsx.utils.sheet_to_json(worksheet, { raw: false });
-
-    const billings: BillingDTO[] = data.map((item: any) => {
-      const billing: BillingDTO = {
-        quantity: parseInt(item['quantidade cobranças']),
-        chargedIntervalDays: parseInt(item['cobrada a cada X dias']),
-        start: moment(item['data início'], [
-          'DD/MM/YYYY HH:mm',
-          'YYYY-MM-DDTHH:mm:ss',
-          'MM/DD/YYYYTHH:mm:ss',
-        ]).toISOString(),
-        status: item.status,
-        statusDate: moment(item['data status'], [
-          'DD/MM/YYYY HH:mm',
-          'YYYY-MM-DDTHH:mm:ss',
-          'MM/DD/YYYYTHH:mm:ss',
-        ]).toISOString(),
-        cancellationDate: item['data cancelamento']
-          ? moment(item['data cancelamento'], [
-              'DD/MM/YYYY HH:mm',
-              'YYYY-MM-DDTHH:mm:ss',
-              'MM/DD/YYYYTHH:mm:ss',
-            ]).toISOString()
-          : null,
-        amount: parseFloat(item.valor),
-        nextCycle: moment(item['próximo ciclo'], [
-          'DD/MM/YYYY HH:mm',
-          'YYYY-MM-DDTHH:mm:ss',
-          'MM/DD/YYYYTHH:mm:ss',
-        ]).toISOString(),
-        userId: item['ID assinante'],
-      };
-      return billing;
-    });
+    const billings: BillingDTO[] = data.map((item: any) =>
+      this.parseBillingData(item),
+    );
 
     return billings;
+  }
+
+  private parseBillingData(item: any): BillingDTO {
+    return {
+      quantity: parseInt(item['quantidade cobranças']),
+      chargedIntervalDays: parseInt(item['cobrada a cada X dias']),
+      start: this.parseDate(item['data início']),
+      status: item.status,
+      statusDate: this.parseDate(item['data status']),
+      cancellationDate: item['data cancelamento']
+        ? this.parseDate(item['data cancelamento'])
+        : null,
+      amount: parseFloat(item.valor),
+      nextCycle: this.parseDate(item['próximo ciclo']),
+      userId: item['ID assinante'],
+    };
+  }
+
+  private parseDate(dateString: string): string {
+    return moment(dateString, [
+      'DD/MM/YYYY HH:mm',
+      'YYYY-MM-DDTHH:mm:ss',
+      'MM/DD/YYYYTHH:mm:ss',
+    ]).toISOString();
   }
 
   async saveBillings(billings: BillingDTO[]) {
@@ -68,18 +65,7 @@ export class BillingsService {
     }
   }
 
-  async calculateMetrics(start: Date, end: Date): Promise<any> {
-    const startDate = moment(start, moment.ISO_8601, true);
-    const endDate = moment(end, moment.ISO_8601, true);
-
-    if (
-      !startDate.isValid() ||
-      !endDate.isValid() ||
-      startDate.isAfter(endDate)
-    ) {
-      throw new BadRequestException('Datas de início e fim inválidas.');
-    }
-
+  async calculateMetrics(start: Date, end: Date): Promise<MetricsResponse> {
     const billings = await this.prisma.billing.findMany({
       where: {
         status: {
@@ -123,13 +109,14 @@ export class BillingsService {
       },
     }));
 
-    const totalMRR = Object.values(mrrByMonth)
-      .reduce((acc, curr) => acc + curr, 0)
-      .toFixed(2);
+    const totalMRR =
+      Object.values(mrrByMonth)
+        .reduce((acc, curr) => acc + curr, 0)
+        .toFixed(2) || 0;
     const totalChurn =
       Object.values(churnByMonth)
         .reduce((acc, curr) => acc + curr, 0)
-        .toFixed(2) || '0';
+        .toFixed(2) || 0;
 
     const response = {
       records,
@@ -139,24 +126,24 @@ export class BillingsService {
 
     return response;
   }
-  
-  async listBillings(page: number, status: Status): Promise<Response> {
+
+  async listBillings(page: number, status: Status): Promise<BillingsResponse> {
     const take = 15;
     const skip = (page - 1) * take;
-  
+
     const where = {
       status: {
         equals: status,
       },
     };
-  
+
     const [total, billings] = await Promise.all([
       this.prisma.billing.count({ where }),
       this.prisma.billing.findMany({ take, skip, where }),
     ]);
-    
+
     const numberOfPages = Math.ceil(total / take);
-  
+
     return {
       billings,
       currentPage: page,
@@ -165,5 +152,4 @@ export class BillingsService {
       total,
     };
   }
-  
 }
