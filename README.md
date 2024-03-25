@@ -48,6 +48,10 @@ Este projeto consiste em um código backend capaz de lidar com a manipulação d
 3) npm run start
 3) npx prisma studio
 
+## Collection da API - Postman
+
+[![postman]](https://github.com/buenomoreto/Teste-backend-copybase/blob/main/collection/teste-copybase.postman_collection.json)
+
 ## Documentação da API
 
 #### Upload de Arquivo
@@ -145,6 +149,7 @@ Este projeto consiste em um código backend capaz de lidar com a manipulação d
           "userId": "user_100"
       },
   ],
+  "numberOfPages": 5,
   "currentPage": "1",
   "itemsPerPage": 15
 }

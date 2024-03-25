@@ -1,0 +1,112 @@
+{
+	"info": {
+		"_postman_id": "526c6ddc-8ee8-40a4-a2b8-5727b6a4f0e2",
+		"name": "Teste copybase",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "17916355"
+	},
+	"item": [
+		{
+			"name": "Conexão com API",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://teste-backend-copybase.vercel.app",
+					"protocol": "https",
+					"host": [
+						"teste-backend-copybase",
+						"vercel",
+						"app"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Listagem das cobranças",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://teste-backend-copybase.vercel.app/api/listing?page=1&status=Ativa",
+					"protocol": "https",
+					"host": [
+						"teste-backend-copybase",
+						"vercel",
+						"app"
+					],
+					"path": [
+						"api",
+						"listing"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1",
+							"description": "Obrigatorio"
+						},
+						{
+							"key": "status",
+							"value": "Ativa",
+							"description": "Opcional"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Métricas MRR & Churn rate",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://teste-backend-copybase.vercel.app/api/metrics?start=2022-01-01T03:00:00.000Z&end=2023-01-01T02:59:59.999Z",
+					"protocol": "https",
+					"host": [
+						"teste-backend-copybase",
+						"vercel",
+						"app"
+					],
+					"path": [
+						"api",
+						"metrics"
+					],
+					"query": [
+						{
+							"key": "start",
+							"value": "2022-01-01T03:00:00.000Z"
+						},
+						{
+							"key": "end",
+							"value": "2023-01-01T02:59:59.999Z"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Upload arquivo .xlsx || .csv",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "https://teste-backend-copybase.vercel.app/api/upload",
+					"protocol": "https",
+					"host": [
+						"teste-backend-copybase",
+						"vercel",
+						"app"
+					],
+					"path": [
+						"api",
+						"upload"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
