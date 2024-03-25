@@ -96,18 +96,24 @@ export class BillingsService {
       }
     });
 
-    const records = Object.keys(mrrByMonth).map((month) => ({
-      month: {
-        value: parseInt(month),
-        label: moment().month(parseInt(month)).format('MMMM'),
-      },
-      mrr: {
-        total: mrrByMonth[parseInt(month)].toFixed(2) || 0,
-      },
-      churn: {
-        total: churnByMonth[parseInt(month)].toFixed(2) || 0,
-      },
-    }));
+    const records = Object.keys(mrrByMonth).map(month => {
+        const monthIndex = parseInt(month);
+        const mrrTotal = mrrByMonth[monthIndex] || 0;
+        const churnTotal = churnByMonth[monthIndex] || 0;
+        
+        return {
+            month: {
+                value: monthIndex,
+                label: moment().month(monthIndex).format('MMMM')
+            },
+            mrr: {
+                total: mrrTotal.toFixed(2)
+            },
+            churn: {
+                total: churnTotal.toFixed(2)
+            }
+        };
+    });
 
     const totalMRR =
       Object.values(mrrByMonth)
