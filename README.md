@@ -44,8 +44,7 @@ Este projeto consiste em um código backend capaz de lidar com a manipulação d
 ## Como executar o projeto:
 
 1) npm install
-2) npx prisma db push
-3) npm run start
+3) npm run start:dev
 3) npx prisma studio
 
 ## Collection da API - Postman
