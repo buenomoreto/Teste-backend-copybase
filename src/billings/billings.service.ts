@@ -28,6 +28,7 @@ export class BillingsService {
     const workbook = xlsx.read(file.buffer);
     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
     const data = xlsx.utils.sheet_to_json(worksheet, { raw: false });
+    
     const billings: BillingDTO[] = data.map((item: any) =>
       this.parseBillingData(item),
     );
@@ -37,16 +38,16 @@ export class BillingsService {
 
   private parseBillingData(item: any): BillingDTO {
     return {
-      quantity: parseInt(item['quantidade cobranças']),
+      quantity: parseInt(item['quantidade cobranças'] || item['quantidade cobranÃ§as']),
       chargedIntervalDays: parseInt(item['cobrada a cada X dias']),
-      start: this.parseDate(item['data início']),
+      start: this.parseDate(item['data início'] || item['data inÃ­cio']),
       status: item.status,
       statusDate: this.parseDate(item['data status']),
       cancellationDate: item['data cancelamento']
         ? this.parseDate(item['data cancelamento'])
         : null,
       amount: parseFloat(item.valor),
-      nextCycle: this.parseDate(item['próximo ciclo']),
+      nextCycle: this.parseDate(item['próximo ciclo'] || item['prÃ³ximo ciclo']),
       userId: item['ID assinante'],
     };
   }
@@ -60,9 +61,9 @@ export class BillingsService {
   }
 
   async saveBillings(billings: BillingDTO[]) {
-    for (const billing of billings) {
-      await this.prisma.billing.create({ data: billing });
-    }
+    await this.prisma.$transaction([
+      this.prisma.billing.createMany({ data: billings }),
+    ]);
   }
 
   async calculateMetrics(start: Date, end: Date): Promise<MetricsResponse> {
